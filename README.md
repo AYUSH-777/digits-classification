@@ -1,5 +1,6 @@
 how to setup:
 
+Refer to Readme for setup
 
 install conda
 
