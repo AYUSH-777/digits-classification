@@ -3,6 +3,8 @@
 from sklearn import svm,datasets
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
+import matplotlib.pyplot as plt
+
 
 
 #read gigits
@@ -62,5 +64,15 @@ def predict_and_eval(model, X_test, y_test):
     disp = metrics.ConfusionMatrixDisplay.from_estimator(model, X_test, y_test)
     disp.figure_.suptitle("Confusion Matrix")
     print(f"Confusion matrix:\n{disp.confusion_matrix}")
+
+    _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
+    for ax, image, prediction in zip(axes, X_test, predicted):
+        ax.set_axis_off()
+        image = image.reshape(8, 8)
+        ax.imshow(image, cmap=plt.cm.gray_r, interpolation="nearest")
+        ax.set_title(f"Prediction: {prediction}")
+
+
+    plt.show()
 
     return predicted

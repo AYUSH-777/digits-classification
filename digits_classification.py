@@ -4,7 +4,6 @@
 # License: BSD 3 clause
 
 # Standard scientific Python imports
-import matplotlib.pyplot as plt
 
 # Import datasets, classifiers and performance metrics
 from sklearn import metrics
@@ -33,12 +32,3 @@ model = train_model(X_train, y_train, {'gamma': 0.001}, model_type='svm')
 predicted = predict_and_eval(model, X_test, y_test)
 
 # 7. Quantitative sanity check
-_, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
-for ax, image, prediction in zip(axes, X_test, predicted):
-    ax.set_axis_off()
-    image = image.reshape(8, 8)
-    ax.imshow(image, cmap=plt.cm.gray_r, interpolation="nearest")
-    ax.set_title(f"Prediction: {prediction}")
-
-
-plt.show()
