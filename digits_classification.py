@@ -34,7 +34,7 @@ for test_size, dev_size in product(test_sizes, dev_sizes):
     test_acc = predict_and_eval(best_model, X_test, y_test)
     print(f"test_size={test_size} dev_size={dev_size} train_size={1 - test_size - dev_size} "
           f"train_acc={train_acc:.4f} dev_acc={dev_acc:.4f} test_acc={test_acc:.4f} "
-          f"best_hparam={hparam}")
+          f"best_hparams={hparam}")
 
 
 
