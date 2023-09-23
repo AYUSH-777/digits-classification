@@ -8,7 +8,7 @@
 # Import datasets, classifiers and performance metrics
 from sklearn import metrics
 from itertools import product
-from utils import preprocess_data, train_model, split_data, read_digits, train_test_dev_split, predict_and_eval, tune_hparams
+from utils import preprocess_data, train_model, split_data, read_digits, train_test_dev_split, predict_and_eval, tune_hparams, get_digits_len_size
 
 gamma_ranges = [0.001, 0.01, 0.1, 1, 10, 100]
 C_ranges = [0.1, 1, 2, 5, 10]
@@ -35,6 +35,12 @@ for test_size, dev_size in product(test_sizes, dev_sizes):
     print(f"test_size={test_size} dev_size={dev_size} train_size={1 - test_size - dev_size} "
           f"train_acc={train_acc:.4f} dev_acc={dev_acc:.4f} test_acc={test_acc:.4f} "
           f"best_hparams={hparam}")
+
+
+
+#### Q1 Implementation
+
+get_digits_len_size()
 
 
 

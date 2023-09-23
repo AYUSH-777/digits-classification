@@ -71,3 +71,11 @@ def tune_hparams(X_train, y_train, X_dev, y_dev, list_of_all_param_combination):
     return best_hparams, best_model, best_acc_so_far
 
 
+def get_digits_len_size():
+    digits = datasets.load_digits()
+    x = digits.images
+    y = digits.target
+    print("\n")
+    print("2.1 The number of total samples in the dataset:", len(x))
+    print("2.2 Size (height and width) of the images in dataset:", x[0].shape)  # Assuming all images have the same size
+    return x, y
