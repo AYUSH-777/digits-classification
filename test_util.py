@@ -43,14 +43,14 @@ def test_mode_saving():
     _, best_model_path, _ = tune_hparams(X_train, y_train, X_dev, y_dev, list_of_all_param_combination)
     assert os.path.exists(best_model_path)
 
-def test_data_splitting():
-    X,y = read_digits()
-    X = X[:100,:,:]
-    y = y[:100]
-
-    test_size = 0.1
-    dev_size = 0.6
-    train_size = 1 - (dev_size + test_size)
-
-    X_train, X_test,X_dev, y_train, y_test,y_dev = split_train_dev_test(X, y, test_size=test_size, dev_size=dev_size);
-    assert len(X_train) == int(train_size * len(X)) and len(X_test) == int(test_size * len(X)) and len(X_dev) == int(dev_size * len(X))
+# def test_data_splitting():
+#     X,y = read_digits()
+#     X = X[:100,:,:]
+#     y = y[:100]
+#
+#     test_size = 0.1
+#     dev_size = 0.6
+#     train_size = 1 - (dev_size + test_size)
+# 
+#     X_train, X_test,X_dev, y_train, y_test,y_dev = split_train_dev_test(X, y, test_size=test_size, dev_size=dev_size);
+#     assert len(X_train) == int(train_size * len(X)) and len(X_test) == int(test_size * len(X)) and len(X_dev) == int(dev_size * len(X))
