@@ -35,7 +35,6 @@ def create_dummy_data():
     X_dev = preprocess_data(X_dev)
     return X_train, y_train, X_dev, y_dev
 
-git add
 
 
 def test_mode_saving():
