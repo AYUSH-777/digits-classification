@@ -14,33 +14,48 @@ from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 
 from itertools import product
-from utils import preprocess_data, train_model, split_data, read_digits, train_test_dev_split, predict_and_eval, tune_hparams, get_digits_len_size
+from utils import preprocess_data, train_model, split_data, read_digits, train_test_dev_split, predict_and_eval, tune_hparams, get_digits_len_size, split_train_dev_test
+from joblib import load
 
-gamma_ranges = [0.001, 0.01, 0.1, 1, 10, 100]
-C_ranges = [0.1, 1, 2, 5, 10]
+
 
 test_sizes = [0.1, 0.2, 0.3]
 dev_sizes = [0.1, 0.2, 0.3]
 
-X, y = read_digits()
+x,y = read_digits()
 
-for test_size, dev_size in product(test_sizes, dev_sizes):
+print("Total number of samples : ", len(x))
 
-    X_train, X_test, X_dev, y_train, y_test, y_dev = train_test_dev_split(X, y, test_size=test_size, dev_size=dev_size)
+print("(number of samples,length of image,height of image) is:",x.shape)
 
-    X_train = preprocess_data(X_train)
-    X_test = preprocess_data(X_test)
-    X_dev = preprocess_data(X_dev)
+test_sizes = [0.1, 0.2, 0.3]
+dev_sizes = [0.1, 0.2, 0.3]
 
-    best_hparams, best_model, best_acc_so_far = tune_hparams(X_train, y_train, X_dev, y_dev, product(gamma_ranges, C_ranges))
+for test_size in test_sizes:
+    for dev_size in dev_sizes:
+        # 3. Data splitting
+        X_train, X_test,X_dev, y_train, y_test,y_dev = split_train_dev_test(x, y, test_size=test_size, dev_size=dev_size);
 
-    hparam = {'gamma':best_hparams[0],'C':best_hparams[1]}
-    train_acc = predict_and_eval(best_model, X_train, y_train)
-    dev_acc = predict_and_eval(best_model, X_dev, y_dev)
-    test_acc = predict_and_eval(best_model, X_test, y_test)
-    print(f"test_size={test_size} dev_size={dev_size} train_size={1 - test_size - dev_size} "
-          f"train_acc={train_acc:.4f} dev_acc={dev_acc:.4f} test_acc={test_acc:.4f} "
-          f"best_hparams={hparam}")
+        # 4. Data Preprocessing
+        X_train = preprocess_data(X_train)
+        X_test = preprocess_data(X_test)
+        X_dev = preprocess_data(X_dev)
+
+        gama_ranges = [0.001, 0.01, 0.1, 1, 10, 100, 1000]
+        C_ranges = [0.1,1,2,5,10]
+        list_of_all_param_combination = [{'gamma': gamma, 'C': C} for gamma in gama_ranges for C in C_ranges]
+
+        # Predict the value of the digit on the test subset
+        # 6.Predict and Evaluate
+        best_hparams, best_model_path, best_accuracy = tune_hparams(X_train, y_train, X_dev, y_dev, list_of_all_param_combination)
+        best_model = load(best_model_path)
+
+
+        accuracy_test = predict_and_eval(best_model, X_test, y_test)
+        accuracy_dev = predict_and_eval(best_model, X_dev, y_dev)
+        accuracy_train = predict_and_eval(best_model, X_train, y_train)
+        print(f"test_size={test_size} dev_size={dev_size} train_size={1- (dev_size+test_size)} train_acc={accuracy_train} dev_acc={accuracy_dev} test_acc={accuracy_test}")
+        print(f"best_gamma={best_hparams['gamma']},best_C={best_hparams['C']}")
 
 
 
