@@ -23,4 +23,4 @@ jobs:
       - name: Run Pytest
         run: pytest
       - name: I am running this python experiment for the ML Ops Quiz - 1
-        run:  python digits_classification.py
+        run:  python digits_classification.py --runs 1
