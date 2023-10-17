@@ -7,6 +7,9 @@ from sklearn.model_selection import train_test_split
 from sklearn import metrics
 import matplotlib.pyplot as plt
 from joblib import dump,load
+from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier  # Import the Decision Tree classifier
+
 
 
 
@@ -35,6 +38,8 @@ def split_data(X,y,test_size=0.5,random_state=1):
 def train_model(X, y, model_params,model_type = 'svm'):
     if model_type == 'svm':
         clf = svm.SVC(**model_params)
+    if model_type == 'tree':
+        clf = tree.DecisionTreeClassifier(**model_params)
     clf.fit(X, y)
     return clf
 
@@ -64,27 +69,60 @@ def predict_and_eval(model, X, y):
     return accuracy
 
 
-def tune_hparams(X_train, Y_train, X_dev, y_dev, list_of_all_param_combination):
+def tune_hparams(X_train, Y_train, X_dev, y_dev, list_of_all_param_combination, model_type='svm'):
     best_accuracy_so_far = -1
     best_model = None
     best_model_path = ""
 
     for param_combination in list_of_all_param_combination:
-        cur_model = train_model(X_train, Y_train, {'gamma': param_combination['gamma'],'C':param_combination['C']}, model_type='svm')
+        if model_type == 'svm':
+            cur_model = train_model(X_train, Y_train, {'gamma': param_combination['gamma'],'C':param_combination['C']}, model_type='svm')
+        if model_type == 'tree':
+            cur_model = train_model(X_train, Y_train, {'max_depth': param_combination['max_depth']}, model_type='tree')
+
         cur_accuracy = predict_and_eval(cur_model, X_dev, y_dev)
         if cur_accuracy > best_accuracy_so_far:
             best_accuracy_so_far = cur_accuracy
-            optimal_gamma = param_combination['gamma']
-            optimal_C = param_combination['C']
-            best_hparams = {'gamma': optimal_gamma,'C':optimal_C}
-            # Replace colons with underscores in the filename
-            best_model_path = "./models/best_model" + "_".join(["{}:{}".format(k,v) for k,v in best_hparams.items()]).replace(":", "_") + ".joblib"
+            if model_type == 'svm':
+                optimal_gamma = param_combination['gamma']
+                optimal_C = param_combination['C']
+                best_hparams = {'gamma': optimal_gamma,'C':optimal_C}
+            if model_type == 'tree':
+                optimal_max_depth = param_combination['max_depth']
+                best_hparams = {'max_depth': optimal_max_depth}
+            best_model_path = "./models/best_decision_tree_model" + "_".join(["{}:{}".format(k, v) for k, v in best_hparams.items()]).replace(":", "_") + ".joblib"
+
             best_model = cur_model
 
     # save the best model
-    dump(best_model, best_model_path)
+    dump(best_model,best_model_path)
+    #best_model_path =
     return best_hparams, best_model_path, best_accuracy_so_far
 
+
+def tune_hparams_using_DT(X_train, Y_train, X_dev, y_dev, list_of_all_param_combination):
+    best_accuracy_so_far = -1
+    best_model = None
+    best_model_path = ""
+
+    for param_combination in list_of_all_param_combination:
+        # Train a Decision Tree model instead of SVM
+        cur_model = DecisionTreeClassifier(max_depth=param_combination['max_depth'], min_samples_split=param_combination['min_samples_split'])
+        cur_model.fit(X_train, Y_train)
+
+        cur_accuracy = predict_and_eval(cur_model, X_dev, y_dev)
+        if cur_accuracy > best_accuracy_so_far:
+            best_accuracy_so_far = cur_accuracy
+            optimal_max_depth = param_combination['max_depth']
+            optimal_min_samples_split = param_combination['min_samples_split']
+            best_hparams = {'max_depth': optimal_max_depth, 'min_samples_split': optimal_min_samples_split}
+            # Modify the filename to indicate it's a Decision Tree model
+            best_model_path = "./models/best_decision_tree_model" + "_".join(["{}:{}".format(k, v) for k, v in best_hparams.items()]).replace(":", "_") + ".joblib"
+            best_model = cur_model
+
+    # Save the best Decision Tree model
+    dump(best_model, best_model_path)
+    return best_hparams, best_model_path, best_accuracy_so_far
 
 def get_digits_len_size():
     digits = datasets.load_digits()
