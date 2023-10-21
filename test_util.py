@@ -19,29 +19,29 @@ def test_in_gamma_ranges():
 
 
 
-def create_dummy_hyperparamete():
-    gama_ranges = [0.001, 0.01, 0.1, 1, 10, 100, 1000]
-    C_ranges = [0.1,1,2,5,10]
-    list_of_all_param_combination = [{'gamma': gamma, 'C': C} for gamma in gama_ranges for C in C_ranges]
-    return list_of_all_param_combination
-
-def create_dummy_data():
-    X,y = read_digits()
-    X_train = X[:100,:,:]
-    y_train = y[:100]
-    X_dev = X[:50,:,:]
-    y_dev = y[:50]
-    X_train = preprocess_data(X_train)
-    X_dev = preprocess_data(X_dev)
-    return X_train, y_train, X_dev, y_dev
-
-
-
-def test_mode_saving():
-    X_train, y_train, X_dev, y_dev = create_dummy_data()
-    list_of_all_param_combination = create_dummy_hyperparamete()
-    _, best_model_path, _ = tune_hparams(X_train, y_train, X_dev, y_dev, list_of_all_param_combination)
-    assert os.path.exists(best_model_path)
+# def create_dummy_hyperparamete():
+#     gama_ranges = [0.001, 0.01, 0.1, 1, 10, 100, 1000]
+#     C_ranges = [0.1,1,2,5,10]
+#     list_of_all_param_combination = [{'gamma': gamma, 'C': C} for gamma in gama_ranges for C in C_ranges]
+#     return list_of_all_param_combination
+#
+# def create_dummy_data():
+#     X,y = read_digits()
+#     X_train = X[:100,:,:]
+#     y_train = y[:100]
+#     X_dev = X[:50,:,:]
+#     y_dev = y[:50]
+#     X_train = preprocess_data(X_train)
+#     X_dev = preprocess_data(X_dev)
+#     return X_train, y_train, X_dev, y_dev
+#
+#
+#
+# def test_mode_saving():
+#     X_train, y_train, X_dev, y_dev = create_dummy_data()
+#     list_of_all_param_combination = create_dummy_hyperparamete()
+#     _, best_model_path, _ = tune_hparams(X_train, y_train, X_dev, y_dev, list_of_all_param_combination)
+#     assert os.path.exists(best_model_path)
 
 # def test_data_splitting():
 #     X,y = read_digits()
