@@ -2,7 +2,7 @@ import os.path
 
 # Import datasets, classifiers and performance metrics
 from sklearn import svm,datasets
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 import matplotlib.pyplot as plt
@@ -17,9 +17,9 @@ from sklearn.tree import DecisionTreeClassifier  # Import the Decision Tree clas
 #read gigits
 def read_digits():
     digits = datasets.load_digits()
-    x = digits.images
+    X = digits.data
     y = digits.target
-    return x,y
+    return X,y
 
 # We will define utils here :
 def preprocess_data(data):
@@ -132,3 +132,18 @@ def get_digits_len_size():
     print("2.1 The number of total samples in the dataset:", len(x))
     print("2.2 Size (height and width) of the images in dataset:", x[0].shape)  # Assuming all images have the same size
     return x, y
+
+def calculate_scores(y_test, production_predictions, candidate_predictions):
+    production_accuracy = accuracy_score(y_test, production_predictions)
+    candidate_accuracy = accuracy_score(y_test, candidate_predictions)
+
+    # Step 6: Create a confusion matrix for both models
+    production_confusion_matrix = confusion_matrix(y_test, production_predictions)
+    candidate_confusion_matrix = confusion_matrix(y_test, candidate_predictions)
+
+    return production_accuracy, candidate_accuracy, production_confusion_matrix, candidate_confusion_matrix
+
+def get_f1_score(y_test, production_predictions, candidate_predictions):
+    production_macro_f1 = f1_score(y_test, production_predictions, average='macro')
+    candidate_macro_f1 = f1_score(y_test, candidate_predictions, average='macro')
+    return production_macro_f1, candidate_macro_f1
