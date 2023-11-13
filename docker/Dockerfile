@@ -5,4 +5,9 @@ COPY . /digits/
 RUN pip3 install -r /digits/requirements.txt
 
 WORKDIR /digits
-CMD ["pytest"]
+#CMD ["pytest"]
+
+ENV FLASK_APP=api/hello
+
+#CMD ["flask","run"]
+CMD ["flask","run","--host=0.0.0git status.0"]
