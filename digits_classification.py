@@ -23,12 +23,12 @@ from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 # 1. Data Loading
 
 x,y = read_digits()
-parser=argparse.ArgumentParser()
-
-parser.add_argument("--runs", help="number of runs")
-args=parser.parse_args()
-
-max_runs = int(args.runs)
+# parser=argparse.ArgumentParser()
+#
+# parser.add_argument("--runs", help="number of runs")
+# args=parser.parse_args()
+#
+max_runs = 1
 
 
 #print("Total number of samples : ", len(x))
@@ -74,48 +74,9 @@ for i in range(max_runs):
                 accuracy_test = predict_and_eval(best_model, X_test, y_test)
                 accuracy_dev = predict_and_eval(best_model, X_dev, y_dev)
                 accuracy_train = predict_and_eval(best_model, X_train, y_train)
-                # print(f"model={model} run_index={i} test_size={test_size} dev_size={dev_size} train_size={1- (dev_size+test_size)} train_acc={accuracy_train} dev_acc={accuracy_dev} test_acc={accuracy_test}")
-                # results.append([{'model':model,'run_index': i, 'test_size':test_size, 'dev_size':dev_size,'train_size': 1- (dev_size+test_size), 'train_acc':accuracy_train,'dev_acc':accuracy_dev,'test_acc':accuracy_test}])
+                print(f"model={model} run_index={i} test_size={test_size} dev_size={dev_size} train_size={1- (dev_size+test_size)} train_acc={accuracy_train} dev_acc={accuracy_dev} test_acc={accuracy_test}")
+                results.append([{'model':model,'run_index': i, 'test_size':test_size, 'dev_size':dev_size,'train_size': 1- (dev_size+test_size), 'train_acc':accuracy_train,'dev_acc':accuracy_dev,'test_acc':accuracy_test}])
         #print(f"best_gamma={best_hparams['gamma']},best_C={best_hparams['C']}")
 
 
 
-
-X, y = read_digits()
-
-# Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Step 2: Train and tune the production model (SVM)
-production_model = SVC(C=1.0, kernel='rbf', gamma='scale')
-production_model.fit(X_train, y_train)
-
-# Step 3: Train and tune the candidate model (Decision Tree)
-candidate_model = DecisionTreeClassifier(max_depth=10, random_state=42)
-candidate_model.fit(X_train, y_train)
-
-# Step 4: Make predictions using both models
-production_predictions = production_model.predict(X_test)
-candidate_predictions = candidate_model.predict(X_test)
-
-production_accuracy, candidate_accuracy, production_confusion_matrix, candidate_confusion_matrix = calculate_scores(y_test, production_predictions, candidate_predictions)
-
-# Step 7: Calculate a 2x2 confusion matrix for samples predicted correctly by the production model but not by the candidate model
-correctly_predicted_by_production = (production_predictions == y_test) & (candidate_predictions != production_predictions)
-correctly_predicted_by_candidate = (candidate_predictions == y_test) & (candidate_predictions != production_predictions)
-confusion_2x2 = np.array([
-    [np.sum(correctly_predicted_by_production), np.sum(correctly_predicted_by_candidate)],
-    [np.sum(~correctly_predicted_by_production), np.sum(~correctly_predicted_by_candidate)]
-])
-
-
-production_macro_f1, candidate_macro_f1 = get_f1_score(y_test, production_predictions, candidate_predictions)
-# Print the results
-print("Results for QUiz - 2")
-print("Production Model Accuracy:", production_accuracy)
-print("Candidate Model Accuracy:", candidate_accuracy)
-print("Production Model Confusion Matrix:\n", production_confusion_matrix)
-print("Candidate Model Confusion Matrix:\n", candidate_confusion_matrix)
-print("2x2 Confusion Matrix:\n", confusion_2x2)
-print("Production Model Macro-average F1 Score:", production_macro_f1)
-print("Candidate Model Macro-average F1 Score:", candidate_macro_f1)

@@ -90,7 +90,8 @@ def tune_hparams(X_train, Y_train, X_dev, y_dev, list_of_all_param_combination, 
             if model_type == 'tree':
                 optimal_max_depth = param_combination['max_depth']
                 best_hparams = {'max_depth': optimal_max_depth}
-            best_model_path = "./models/best_decision_tree_model" + "_".join(["{}:{}".format(k, v) for k, v in best_hparams.items()]).replace(":", "_") + ".joblib"
+            best_model_path = "./models/best_decision_tree_model_" + "_".join(["{}:{}".format(k, v) for k, v in best_hparams.items()]).replace(":", "_") + ".joblib"
+            # best_model_path = "/digits/models/best_decision_tree_model_" + "_".join(["{}:{}".format(k, v) for k, v in best_hparams.items()]).replace(":", "_") + ".joblib"
 
             best_model = cur_model
 
@@ -98,6 +99,49 @@ def tune_hparams(X_train, Y_train, X_dev, y_dev, list_of_all_param_combination, 
     dump(best_model,best_model_path)
     #best_model_path =
     return best_hparams, best_model_path, best_accuracy_so_far
+
+
+# def tune_hparams(x_train,y_train,x_dev,y_dev,gamma_ranges,c_ranges,depth_ranges,model_type):
+#     best_accuracy = -999999
+#     best_model = None
+#
+#     best_model_path = None
+#     best_gamma = None
+#     best_C = None
+#     best_depth = None
+#
+#
+#     if model_type == 'svm':
+#         for cur_gamma_range in gamma_ranges:
+#             for cur_c_range in c_ranges:
+#                 cur_model = train_model(x_train,y_train,{'gamma':cur_gamma_range,'C':cur_c_range},model_type)
+#                 cur_accuracy = predict_and_eval(cur_model,x_dev,y_dev)
+#                 if best_accuracy < cur_accuracy:
+#                     best_accuracy = cur_accuracy
+#                     best_model = cur_model
+#                     best_gamma = cur_gamma_range
+#                     best_C = cur_c_range
+#
+#
+#         best_model_path = './models/best_model/'+str(model_type)+'_'+str(best_gamma)+'_'+str(best_C)+'.joblib'
+#         dump(best_model,best_model_path)
+#
+#
+#     elif model_type == 'tree':
+#         for cur_depth in depth_ranges:
+#             cur_model = train_model(x_train,y_train,{'max_depth':cur_depth},model_type)
+#             cur_accuracy = predict_and_eval(cur_model,x_dev,y_dev)
+#             if best_accuracy < cur_accuracy:
+#                 best_accuracy = cur_accuracy
+#                 best_model = cur_model
+#                 best_depth = cur_depth
+#
+#
+#         best_model_path = './models/best_model/'+str(model_type)+'_'+str(best_depth)+'.joblib'
+#         dump(best_model,best_model_path)
+#
+#
+#     return best_model_path
 
 
 def tune_hparams_using_DT(X_train, Y_train, X_dev, y_dev, list_of_all_param_combination):
@@ -117,7 +161,8 @@ def tune_hparams_using_DT(X_train, Y_train, X_dev, y_dev, list_of_all_param_comb
             optimal_min_samples_split = param_combination['min_samples_split']
             best_hparams = {'max_depth': optimal_max_depth, 'min_samples_split': optimal_min_samples_split}
             # Modify the filename to indicate it's a Decision Tree model
-            best_model_path = "./models/best_decision_tree_model" + "_".join(["{}:{}".format(k, v) for k, v in best_hparams.items()]).replace(":", "_") + ".joblib"
+            # best_model_path = "./models/best_decision_tree_model" + "_".join(["{}:{}".format(k, v) for k, v in best_hparams.items()]).replace(":", "_") + ".joblib"
+            best_model_path = "/digits/models/best_decision_tree_model" + "_".join(["{}:{}".format(k, v) for k, v in best_hparams.items()]).replace(":", "_") + ".joblib"
             best_model = cur_model
 
     # Save the best Decision Tree model
