@@ -1,20 +1,20 @@
 from itertools import product
-import pytest
-from google.auth.transport import requests
-from api import app
+# import pytest
+# from google.auth.transport import requests
+# from api import app
 from api.app import app
 # from api.hello import
 from utils import split_train_dev_test,read_digits,preprocess_data,tune_hparams
 import os
 
 
-class MyHTTPClient:
-    def __init__(self, base_url):
-        self.base_url = base_url
-
-    def post(self, path, data):
-        url = self.base_url + path
-        return requests.post(url, json=data)
+# class MyHTTPClient:
+#     def __init__(self, base_url):
+#         self.base_url = base_url
+#
+#     def post(self, path, data):
+#         url = self.base_url + path
+#         return requests.post(url, json=data)
 
 
 def test_hparamenter_count():
