@@ -46,7 +46,7 @@ def preprocess_data_dup(data):
 
     return data
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict_images', methods=['POST'])
 def compare_images_route():
     try:
         # Get the uploaded images from the request
@@ -65,5 +65,23 @@ def compare_images_route():
         is_same_digit = (predicted_image1[0] == predicted_image2[0])
         print(is_same_digit)
         return str(is_same_digit)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+
+
+@app.route('/predict', methods=['POST'])
+def compare_digit_route():
+    try:
+        # Get the uploaded images from the request
+        best_model_path = './models/best_decision_tree_modelgamma_0.001_C_5.joblib'
+        js = request.get_json()
+        image1 = js['image']
+        image2 = image1
+        image1 = preprocess_data_dup(image1)
+        best_model = load(best_model_path)
+        predicted_image1 = best_model.predict(image1)
+        predicted_final_digit = image2[-1]
+        return predicted_final_digit
     except Exception as e:
         return jsonify({'error': str(e)})
