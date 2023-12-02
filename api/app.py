@@ -70,18 +70,40 @@ def compare_images_route():
 
 
 
-@app.route('/predict', methods=['POST'])
-def compare_digit_route():
+
+# Load SVM, LR, and Decision Tree models
+def load_models():
+    svm_model_path = './models/best_decision_svm_model_0.001_5.joblib'
+    lr_model_path = './models/PGD22AI001_lr_lbfgs_.joblib'
+    tree_model_path = './models/best_decision_tree_model_max_depth_10.joblib'
+    svm_model = load(svm_model_path)
+    lr_model = load(lr_model_path)
+    tree_model = load(tree_model_path)
+    return svm_model, lr_model, tree_model
+
+@app.route('/predict/<model_type>', methods=['POST'])
+def compare_digit_route(model_type):
     try:
-        # Get the uploaded images from the request
-        best_model_path = './models/best_decision_tree_modelgamma_0.001_C_5.joblib'
+        svm_model, lr_model, tree_model = load_models()
+        # best_model_path = './models/best_decision_tree_modelgamma_0.001_C_5.joblib'
         js = request.get_json()
         image1 = js['image']
-        image2 = image1
+        # image2 = image1
         image1 = preprocess_data_dup(image1)
-        best_model = load(best_model_path)
+        best_model = None
+        if model_type == 'svm':
+            best_model = svm_model
+        elif model_type == 'lr':
+            best_model = lr_model
+        elif model_type == 'tree':
+            best_model = tree_model
+        else:
+            return jsonify({'error': 'Invalid model type'}), 400
+        # best_model = load(best_model_path)
         predicted_image1 = best_model.predict(image1)
-        predicted_final_digit = image2[-1]
-        return predicted_final_digit
+        # predicted_final_digit = image2[-1]
+        # return jsonify({'prediction': str(predicted_image1)})
+        return str(predicted_image1)
     except Exception as e:
         return jsonify({'error': str(e)})
+

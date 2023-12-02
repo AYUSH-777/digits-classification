@@ -4,6 +4,12 @@ import os.path
 from sklearn import svm,datasets
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import normalize
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+import numpy as np
+
+
 from sklearn import metrics
 import matplotlib.pyplot as plt
 from joblib import dump,load
@@ -20,6 +26,7 @@ def read_digits():
     X = digits.data
     y = digits.target
     return X,y
+
 
 # We will define utils here :
 def preprocess_data(data):
@@ -192,3 +199,56 @@ def get_f1_score(y_test, production_predictions, candidate_predictions):
     production_macro_f1 = f1_score(y_test, production_predictions, average='macro')
     candidate_macro_f1 = f1_score(y_test, candidate_predictions, average='macro')
     return production_macro_f1, candidate_macro_f1
+
+
+# Perform unit normalization
+def get_normalized(x,y):
+    X_normalized = normalize(x, axis=1, norm='l2')
+    return X_normalized, y
+
+
+def split_train_dev_test_lr(X, y, test_size, dev_size,random_seed):
+    X_train_dev, X_test, y_train_dev, y_test = split_data(X, y, test_size=test_size,random_state=random_seed)
+    X_train, X_dev, y_train, y_dev = split_data(X_train_dev, y_train_dev, test_size=dev_size/(1-test_size),random_state=random_seed)
+    return X_train, X_test,X_dev, y_train, y_test, y_dev
+
+
+def tune_hparams_lr(x_train,y_train,x_dev,y_dev,gamma_ranges,c_ranges,depth_ranges,solvers,model_type,x_test,y_test):
+    best_model = None
+    best_accuracy = -1
+    best_model_path = None
+
+    if model_type == 'svm':
+        for gamma_range in gamma_ranges:
+            for c_range in c_ranges:
+                cur_model = train_model(x_train,y_train,{'gamma':gamma_range,'C':c_range},model_type)
+                cur_accuracy = predict_and_eval(cur_model,x_dev,y_dev)
+                if best_accuracy < cur_accuracy:
+                    best_model = cur_model
+                    best_model_path = './models/best_decision_svm_+'+str(gamma_range)+'_'+str(c_range)+'.joblib'
+
+
+    elif model_type == 'tree':
+        for depth_range in depth_ranges:
+            cur_model = train_model(x_train,y_train,{'max_depth':depth_range},model_type)
+            cur_accuracy = predict_and_eval(cur_model,x_dev,y_dev)
+            if best_accuracy < cur_accuracy:
+                best_model = cur_model
+                best_model_path = './models/best_decision_tree_+'+str(depth_range)+'_'+'.joblib'
+
+    elif model_type == 'lr':
+        for solver in solvers:
+            cur_model = LogisticRegression(solver=solver)
+            cur_model.fit(x_train, y_train)
+            cur_accuracy = predict_and_eval(cur_model,x_dev,y_dev)
+            best_model = cur_model
+            best_model_path = './models/PGD22AI001_lr_'+str(solver)+'_'+'.joblib'
+            dump(best_model,best_model_path)
+            test_accuracy = predict_and_eval(best_model,x_test,y_test)
+            scores = cross_val_score(cur_model, x_test, y_test, cv=5)
+            print(f"best_model = {best_model} test_accuracy = {test_accuracy} Mean Accuracy= {np.mean(scores)} Standard Deviation = {np.std(scores)}")
+
+
+
+    dump(best_model,best_model_path)
+    return best_model_path

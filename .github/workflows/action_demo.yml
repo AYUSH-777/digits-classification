@@ -22,5 +22,5 @@ jobs:
         run:  pip3 install --no-cache-dir -r requirements.txt
       - name: Run Pytest
         run: pytest
-      - name: I am running this python experiment for the ML Ops Quiz - 4
+      - name: I am running this python experiment for the ML Ops Major Exam
         run:  python digits_classification.py --runs 1
